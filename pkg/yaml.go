@@ -16,6 +16,21 @@ func ReadConfigs() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = readYamlFile(filepath.Join(basepath, "./config/database.yaml"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = readYamlFile(filepath.Join(basepath, "./config/redis.yaml"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = readYamlFile(filepath.Join(basepath, "./config/jwt.yaml"))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func readYamlFile(path string) error {

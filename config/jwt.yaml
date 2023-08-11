@@ -1,0 +1,4 @@
+jwt:
+  secret: "secret"
+  expiration: 3600
+  issuer: "user-service"
