@@ -11,6 +11,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.15.0 // indirect
+	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/redis/go-redis/v9 v9.0.5 // indirect
 	golang.org/x/net v0.9.0 // indirect

@@ -9,7 +9,7 @@ type User struct {
 	Email          string
 	Nickname       string
 	Password       string
-	ProfilePicture Picture
+	ProfilePicture UserPicture
 	Interests      []Interest `gorm:"many2many:user_interests;"`
 	Posts          []Post
 }

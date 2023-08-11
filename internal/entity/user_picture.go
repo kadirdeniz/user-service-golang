@@ -2,7 +2,7 @@ package entity
 
 import "gorm.io/gorm"
 
-type Picture struct {
+type UserPicture struct {
 	*gorm.Model
 	UserId    uint
 	Thumbnail string
