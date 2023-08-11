@@ -12,3 +12,6 @@ docker-build:
 
 docker-run:
 	bash scripts/docker-run.sh
+
+mockgen:
+	bash scripts/mockgen.sh

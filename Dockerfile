@@ -15,4 +15,8 @@ COPY . .
 
 EXPOSE 3000
 
+RUN go get -u -d github.com/golang-migrate/migrate
+
+RUN ["make", "migrate-up"]
+
 ENTRYPOINT [ "make","run" ]

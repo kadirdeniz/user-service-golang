@@ -25,5 +25,5 @@ func main() {
 		service.NewBcrypt(),
 	)
 
-	tools.NewServer().Listen(":3000")
+	tools.NewServer().Listen(":" + pkg.Configs.Application.Port)
 }
