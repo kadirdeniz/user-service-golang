@@ -1,6 +1,8 @@
 package service
 
-import hasher "golang.org/x/crypto/bcrypt"
+import (
+	hasher "golang.org/x/crypto/bcrypt"
+)
 
 var bcryptInstance BcryptActions
 

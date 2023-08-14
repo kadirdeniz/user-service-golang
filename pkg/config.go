@@ -15,6 +15,7 @@ type ApplicationConfig struct {
 	Version     string `yaml:"version"`
 	Environment string `yaml:"environment"`
 	LogLevel    string `yaml:"log_level"`
+	URL         string `yaml:"url"`
 }
 
 type DatabaseConfig struct {

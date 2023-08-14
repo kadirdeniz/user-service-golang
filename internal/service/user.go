@@ -23,11 +23,11 @@ type userService struct {
 func NewUserService(userRepository repository.UserRepositoryActions) UserServiceActions {
 	return &userService{
 		userRepository: userRepository,
+		bcrypt:         NewBcrypt(),
 	}
 }
 
 func (u *userService) Create(user entity.User) (entity.User, error) {
-
 	if u.userRepository.IsEmailExist(user.Email) {
 		return entity.User{}, pkg.ErrEmailAlreadyExist
 	}

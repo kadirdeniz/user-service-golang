@@ -17,8 +17,8 @@ func main() {
 	handler.NewAuthHandler(
 		service.NewUserService(
 			repository.NewUserRepository(
-				tools.GetPostgresql(),
-				tools.GetRedis(),
+				repository.NewUserDBRepository(tools.GetPostgresql()),
+				repository.NewUserRedisRepository(tools.GetRedis()),
 			),
 		),
 		service.NewJWT(),

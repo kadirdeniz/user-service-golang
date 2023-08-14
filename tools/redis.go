@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"context"
+	"fmt"
 	"user-service-golang/pkg"
 
 	"github.com/redis/go-redis/v9"
@@ -18,6 +20,12 @@ func GetRedis() *redis.Client {
 			Password: pkg.Configs.Redis.Password,
 			DB:       pkg.Configs.Redis.DB,
 		})
+
+		_, err := redisClient.Ping(context.Background()).Result()
+		if err != nil {
+			fmt.Println("Error connecting to redis")
+			panic(err)
+		}
 	}
 
 	return redisClient
