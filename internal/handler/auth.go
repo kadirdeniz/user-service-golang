@@ -50,7 +50,9 @@ func (a *authHandler) Register(c *fiber.Ctx) error {
 
 	user, err := a.userService.Create(dto.ToUser())
 	if err != nil {
-		return err
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
 	}
 
 	token := a.jwtService.SetUserId(user.ID).CreateToken().GetToken()
