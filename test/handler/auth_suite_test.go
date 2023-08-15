@@ -1,6 +1,7 @@
 package han_test
 
 import (
+	"fmt"
 	"testing"
 	"user-service-golang/internal/dto"
 	"user-service-golang/internal/handler"
@@ -29,7 +30,6 @@ var _ = Describe("Auth Handler", func() {
 	defer ctrl.Finish()
 
 	var mockRepository = mock.NewMockUserRepositoryActions(ctrl)
-
 	Describe("Register", Ordered, func() {
 		Context("When user is not registered", func() {
 			It("Should register user", func() {
@@ -38,9 +38,9 @@ var _ = Describe("Auth Handler", func() {
 				mockRepository.EXPECT().IsNicknameExist(gomock.Any()).Return(false)
 
 				handler.NewAuthHandler(
-					service.NewUserService(mockRepository),
-					service.NewJWT(),
-					service.NewBcrypt(),
+					service.NewAuthService(
+						service.NewUserService(mockRepository),
+					),
 				)
 
 				req := mock.NewMockRegisterRequest(mock.MockRegisterRequest)
@@ -49,7 +49,7 @@ var _ = Describe("Auth Handler", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).Should(Equal(fiber.StatusCreated))
 
-				var responseObject dto.RegisterResponse
+				var responseObject dto.TokenResponse
 
 				test.ReadResponseBody(resp.Body, &responseObject)
 
@@ -64,9 +64,9 @@ var _ = Describe("Auth Handler", func() {
 					mockRepository.EXPECT().IsNicknameExist(gomock.Any()).AnyTimes().Return(false)
 
 					handler.NewAuthHandler(
-						service.NewUserService(mockRepository),
-						service.NewJWT(),
-						service.NewBcrypt(),
+						service.NewAuthService(
+							service.NewUserService(mockRepository),
+						),
 					)
 
 					req := mock.NewMockRegisterRequest(mock.MockRegisterRequest)
@@ -89,9 +89,9 @@ var _ = Describe("Auth Handler", func() {
 					mockRepository.EXPECT().IsNicknameExist(gomock.Any()).AnyTimes().Return(true)
 
 					handler.NewAuthHandler(
-						service.NewUserService(mockRepository),
-						service.NewJWT(),
-						service.NewBcrypt(),
+						service.NewAuthService(
+							service.NewUserService(mockRepository),
+						),
 					)
 
 					req := mock.NewMockRegisterRequest(mock.MockRegisterRequest)
@@ -106,6 +106,57 @@ var _ = Describe("Auth Handler", func() {
 
 					Expect(responseObject.Message).Should(Equal(pkg.ErrEmailAlreadyExist.Error()))
 				})
+			})
+		})
+	})
+
+	Describe("Login", func() {
+		Context("When user is registered", func() {
+			It("Should login user", func() {
+				mockRepository.EXPECT().FindByEmail(gomock.Any()).Return(mock.MockUser, nil)
+
+				handler.NewAuthHandler(
+					service.NewAuthService(
+						service.NewUserService(mockRepository),
+					),
+				)
+
+				req := mock.NewMockLoginRequest(mock.MockLoginRequest)
+
+				resp, err := tools.NewServer().Test(req)
+				fmt.Println(resp.Body)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(resp.StatusCode).Should(Equal(fiber.StatusOK))
+
+				var responseObject dto.TokenResponse
+
+				test.ReadResponseBody(resp.Body, &responseObject)
+
+				Expect(responseObject.Token).ShouldNot(BeEmpty())
+			})
+		})
+
+		Context("When user is not registered", func() {
+			It("Should return error", func() {
+				mockRepository.EXPECT().FindByEmail(gomock.Any()).Return(mock.MockUser, pkg.ErrUserNotFound)
+
+				handler.NewAuthHandler(
+					service.NewAuthService(
+						service.NewUserService(mockRepository),
+					),
+				)
+
+				req := mock.NewMockLoginRequest(mock.MockLoginRequest)
+
+				resp, err := tools.NewServer().Test(req)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(resp.StatusCode).Should(Equal(fiber.StatusBadRequest))
+
+				var responseObject pkg.ErrorResponse
+
+				test.ReadResponseBody(resp.Body, &responseObject)
+
+				Expect(responseObject.Message).Should(Equal(pkg.ErrUserNotFound.Error()))
 			})
 		})
 	})

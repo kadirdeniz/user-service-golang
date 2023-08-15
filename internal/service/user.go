@@ -20,7 +20,9 @@ type userService struct {
 	bcrypt         BcryptActions
 }
 
-func NewUserService(userRepository repository.UserRepositoryActions) UserServiceActions {
+func NewUserService(
+	userRepository repository.UserRepositoryActions,
+) UserServiceActions {
 	return &userService{
 		userRepository: userRepository,
 		bcrypt:         NewBcrypt(),

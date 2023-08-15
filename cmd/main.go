@@ -15,14 +15,12 @@ func main() {
 	pkg.ReadConfigs()
 
 	handler.NewAuthHandler(
-		service.NewUserService(
-			repository.NewUserRepository(
+		service.NewAuthService(
+			service.NewUserService(repository.NewUserRepository(
 				repository.NewUserDBRepository(tools.GetPostgresql()),
 				repository.NewUserRedisRepository(tools.GetRedis()),
-			),
+			)),
 		),
-		service.NewJWT(),
-		service.NewBcrypt(),
 	)
 
 	tools.NewServer().Listen(":" + pkg.Configs.Application.Port)

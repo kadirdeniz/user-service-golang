@@ -9,3 +9,4 @@ type ErrorResponse struct {
 var ErrEmailAlreadyExist = errors.New("email already exist")
 var ErrNicknameAlreadyExist = errors.New("nickname already exist")
 var ErrPasswordIncorrect = errors.New("password incorrect")
+var ErrUserNotFound = errors.New("user not found")

@@ -17,21 +17,15 @@ type AuthHandlerActions interface {
 }
 
 type authHandler struct {
-	userService service.UserServiceActions
-	jwtService  service.JWTActions
-	bcrypt      service.BcryptActions
+	authService service.AuthServiceActions
 }
 
 func NewAuthHandler(
-	userService service.UserServiceActions,
-	jwtService service.JWTActions,
-	bcrypt service.BcryptActions,
+	authService service.AuthServiceActions,
 ) AuthHandlerActions {
 	if authHandlerInstance == nil {
 		authHandlerInstance = &authHandler{
-			userService: userService,
-			jwtService:  jwtService,
-			bcrypt:      bcrypt,
+			authService: authService,
 		}
 
 		auth := tools.NewServer().Group("/auth")
@@ -48,14 +42,12 @@ func (a *authHandler) Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	user, err := a.userService.Create(dto.ToUser())
+	token, err := a.authService.Register(dto.ToUser())
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
 			Message: err.Error(),
 		})
 	}
-
-	token := a.jwtService.SetUserId(user.ID).CreateToken().GetToken()
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"token": token,
@@ -68,16 +60,12 @@ func (a *authHandler) Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	user, err := a.userService.FindByEmail(dto.Email)
+	token, err := a.authService.Login(dto.ToUser())
 	if err != nil {
-		return err
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
 	}
-
-	if !a.bcrypt.IsPasswordCorrect(user.Password, dto.Password) {
-		return pkg.ErrPasswordIncorrect
-	}
-
-	token := a.jwtService.SetUserId(user.ID).CreateToken().GetToken()
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"token": token,

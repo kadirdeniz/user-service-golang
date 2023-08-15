@@ -12,7 +12,7 @@ type RegisterRequest struct {
 	Password  string `json:"password" validate:"required, min=8, max=16"`
 }
 
-type RegisterResponse struct {
+type TokenResponse struct {
 	Token string `json:"token"`
 }
 

@@ -18,7 +18,7 @@ var MockUser entity.User = entity.User{
 	Lastname:  "Doe",
 	Email:     "johndoe@mail.com",
 	Nickname:  "johndoe",
-	Password:  "johndoe",
+	Password:  "$2a$10$X3vy//lV9cMPGH/mN0JdweI3TXRkUpp4viyQ2RCoDOxGBt8Jvz6bS",
 	ProfilePicture: entity.UserPicture{
 		Model: &gorm.Model{
 			ID:        1,
