@@ -37,12 +37,12 @@ func (j *jsonwebtoken) SetToken(token string) JWTActions {
 }
 
 func (j *jsonwebtoken) SetUserId(userId uint) JWTActions {
-	j.claims.Issuer = strconv.FormatUint(uint64(userId), 10)
+	j.claims.Subject = strconv.FormatUint(uint64(userId), 10)
 	return j
 }
 
 func (j *jsonwebtoken) GetUserId() uint {
-	userId, err := strconv.ParseUint(j.claims.Subject, 10, 32)
+	userId, err := strconv.ParseUint(j.claims.Subject, 10, 64)
 	if err != nil {
 		fmt.Println(err)
 	}

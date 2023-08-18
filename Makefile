@@ -15,3 +15,6 @@ docker-run:
 
 mockgen:
 	bash scripts/mockgen.sh
+
+tests:
+	bash scripts/tests.sh

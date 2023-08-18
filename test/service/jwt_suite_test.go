@@ -23,8 +23,8 @@ var _ = Describe("JWT Service", func() {
 
 	Context("Set User ID", func() {
 		It("should set user id", func() {
-			jwt.SetUserId(1)
-			Expect(jwt.GetUserId()).To(Equal(1))
+			jwt.SetUserId(uint(1))
+			Expect(jwt.GetUserId()).To(Equal(uint(1)))
 		})
 	})
 
