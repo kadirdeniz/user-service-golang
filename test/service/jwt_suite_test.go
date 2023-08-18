@@ -8,10 +8,10 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestJWTHandler(t *testing.T) {
+func TestJWTService(t *testing.T) {
 	testingObj = t
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "JWT Suite")
+	RunSpecs(t, "JWT Service")
 }
 
 var _ = Describe("JWT Service", func() {
