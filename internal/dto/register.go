@@ -5,11 +5,11 @@ import (
 )
 
 type RegisterRequest struct {
-	FirstName string `json:"first_name" validate:"required ,min=3, max=16"`
-	LastName  string `json:"last_name" validate:"required, min=3, max=16"`
+	FirstName string `json:"first_name" validate:"required,min=3,max=16"`
+	LastName  string `json:"last_name" validate:"required,min=3,max=16"`
 	Email     string `json:"email" validate:"required,email"`
-	Nickname  string `json:"nickname" validate:"required, min=3, max=16"`
-	Password  string `json:"password" validate:"required, min=8, max=16"`
+	Nickname  string `json:"nickname" validate:"required,min=3,max=16"`
+	Password  string `json:"password" validate:"required,min=8,max=16"`
 }
 
 type TokenResponse struct {
