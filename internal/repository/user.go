@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"user-service-golang/internal/entity"
+	"user-service-golang/pkg"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -87,18 +88,18 @@ func (u *userRepository) Delete(userId uint) (entity.User, error) {
 func (u *userRepository) FindById(userId uint) (entity.User, error) {
 	user, err := u.redis.FindById(userId)
 	if err != nil {
-		slog.Error(err.Error())
-	}
+		if err == pkg.ErrUserNotFound {
+			user, err = u.db.FindById(userId)
+			if err != nil {
+				return user, err
+			}
 
-	if user.ID == 0 {
-		user, err = u.db.FindById(userId)
-		if err != nil {
+			user, err = u.redis.Create(user)
+			if err != nil {
+				slog.Error(err.Error())
+			}
+		} else {
 			return user, err
-		}
-
-		user, err = u.redis.Create(user)
-		if err != nil {
-			slog.Error(err.Error())
 		}
 	}
 
@@ -108,18 +109,18 @@ func (u *userRepository) FindById(userId uint) (entity.User, error) {
 func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 	user, err := u.redis.FindByEmail(email)
 	if err != nil {
-		slog.Error(err.Error())
-	}
+		if err == pkg.ErrUserNotFound {
+			user, err = u.db.FindByEmail(email)
+			if err != nil {
+				return user, err
+			}
 
-	if user.ID == 0 {
-		user, err = u.db.FindByEmail(email)
-		if err != nil {
+			user, err = u.redis.Create(user)
+			if err != nil {
+				slog.Error(err.Error())
+			}
+		} else {
 			return user, err
-		}
-
-		user, err = u.redis.Create(user)
-		if err != nil {
-			slog.Error(err.Error())
 		}
 	}
 
@@ -129,18 +130,18 @@ func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 func (u *userRepository) FindByNickname(nickname string) (entity.User, error) {
 	user, err := u.redis.FindByNickname(nickname)
 	if err != nil {
-		slog.Error(err.Error())
-	}
+		if err == pkg.ErrUserNotFound {
+			user, err = u.db.FindByNickname(nickname)
+			if err != nil {
+				return user, err
+			}
 
-	if user.ID == 0 {
-		user, err = u.db.FindByNickname(nickname)
-		if err != nil {
+			user, err = u.redis.Create(user)
+			if err != nil {
+				slog.Error(err.Error())
+			}
+		} else {
 			return user, err
-		}
-
-		user, err = u.redis.Create(user)
-		if err != nil {
-			slog.Error(err.Error())
 		}
 	}
 
@@ -265,20 +266,42 @@ func (u *userRedisRepository) FindById(userId uint) (entity.User, error) {
 func (u *userRedisRepository) FindByEmail(email string) (entity.User, error) {
 	var user entity.User
 
-	err := u.redis.Get(context.Background(), fmt.Sprintf("users-email-%v", email)).Scan(&user)
-	if err != nil {
-		return user, err
+	userId := u.redis.Get(context.Background(), fmt.Sprintf("users-email-%v", email)).Val()
+	if userId == "" {
+		return user, pkg.ErrUserNotFound
 	}
 
-	return user, err
+	userStringify := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Val()
+	if userStringify == "" {
+		return user, pkg.ErrUserNotFound
+	}
+
+	err := json.Unmarshal([]byte(userStringify), &user)
+	if err != nil {
+		slog.Error(err.Error())
+		return user, pkg.ErrUserNotFound
+	}
+
+	return user, nil
 }
 
 func (u *userRedisRepository) FindByNickname(nickname string) (entity.User, error) {
 	var user entity.User
 
-	err := u.redis.Get(context.Background(), fmt.Sprintf("users-nickname-%v", nickname)).Scan(&user)
+	userId := u.redis.Get(context.Background(), fmt.Sprintf("users-nickname-%v", nickname)).Val()
+	if userId == "" {
+		return user, pkg.ErrUserNotFound
+	}
+
+	userStringify := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Val()
+	if userStringify == "" {
+		return user, pkg.ErrUserNotFound
+	}
+
+	err := json.Unmarshal([]byte(userStringify), &user)
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return user, pkg.ErrUserNotFound
 	}
 
 	return user, err
@@ -348,6 +371,10 @@ func (u *userDBRepository) FindById(userId uint) (entity.User, error) {
 
 	err := u.db.First(&user, userId).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return user, pkg.ErrUserNotFound
+		}
+
 		return user, err
 	}
 
@@ -359,6 +386,10 @@ func (u *userDBRepository) FindByEmail(email string) (entity.User, error) {
 
 	err := u.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return user, pkg.ErrUserNotFound
+		}
+
 		return user, err
 	}
 
@@ -370,6 +401,10 @@ func (u *userDBRepository) FindByNickname(nickname string) (entity.User, error) 
 
 	err := u.db.Where("nickname = ?", nickname).First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return user, pkg.ErrUserNotFound
+		}
+
 		return user, err
 	}
 
