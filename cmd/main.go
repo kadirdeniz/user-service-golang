@@ -1,3 +1,17 @@
+// Package classification API.
+//
+// Schemes: http
+// BasePath: /api/v1
+// Version: 1.0.0
+// Host: localhost:3000
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// swagger:meta
 package main
 
 import (

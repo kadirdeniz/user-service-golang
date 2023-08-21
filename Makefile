@@ -18,3 +18,6 @@ mockgen:
 
 tests:
 	bash scripts/tests.sh
+
+generate-swagger:
+	bash scripts/generate-swagger.sh

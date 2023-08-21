@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 )
 
 var mutex = &sync.Mutex{}
@@ -16,6 +17,9 @@ func NewServer() *fiber.App {
 
 	if app == nil {
 		app = fiber.New()
+		app.Static("/swagger/doc.json", "./docs/swagger.json")
+
+		app.Get("/swagger/*", swagger.HandlerDefault)
 	}
 	return app
 }

@@ -1,0 +1,46 @@
+{
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "schemes": ["http"],
+  "swagger": "2.0",
+  "info": {
+    "title": "API.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/api/v1",
+  "paths": {
+    "/{version}/auth/login": {
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["Authentication"],
+        "summary": "Login - User login endpoint.",
+        "operationId": "LoginEndpoint",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/TokenResponse"
+          },
+          "400": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/{version}/auth/register": {
+      "post": {
+        "produces": ["application/json"],
+        "tags": ["Authentication"],
+        "summary": "Register - User registration endpoint.",
+        "operationId": "RegisterEndpoint",
+        "responses": {
+          "201": {
+            "$ref": "#/responses/TokenResponse"
+          },
+          "400": {
+            "$ref": "#/responses/ErrorResponse"
+          }
+        }
+      }
+    }
+  }
+}

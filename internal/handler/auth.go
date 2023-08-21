@@ -8,7 +8,6 @@ import (
 	"user-service-golang/tools"
 
 	"github.com/go-playground/validator/v10"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -41,6 +40,14 @@ func NewAuthHandler(
 	return authHandlerInstance
 }
 
+// swagger:route POST /{version}/auth/register Authentication RegisterEndpoint
+// Register - User registration endpoint.
+// Produces:
+// - application/json
+// Responses:
+//
+//	201: TokenResponse
+//	400: ErrorResponse
 func (a *authHandler) Register(c *fiber.Ctx) error {
 	var dtoObj dto.RegisterRequest
 	if err := c.BodyParser(&dtoObj); err != nil {
@@ -67,6 +74,14 @@ func (a *authHandler) Register(c *fiber.Ctx) error {
 	})
 }
 
+// swagger:route POST /{version}/auth/login Authentication LoginEndpoint
+// Login - User login endpoint.
+// Produces:
+// - application/json
+// Responses:
+//
+//	200: TokenResponse
+//	400: ErrorResponse
 func (a *authHandler) Login(c *fiber.Ctx) error {
 	var dtoObj dto.LoginRequest
 	if err := c.BodyParser(&dtoObj); err != nil {
