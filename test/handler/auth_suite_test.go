@@ -1,7 +1,6 @@
 package handler_test
 
 import (
-	"fmt"
 	"testing"
 	"user-service-golang/internal/dto"
 	"user-service-golang/internal/handler"
@@ -124,7 +123,6 @@ var _ = Describe("Auth Handler", func() {
 				req := mock.NewMockLoginRequest(mock.MockLoginRequest)
 
 				resp, err := tools.NewServer().Test(req)
-				fmt.Println(resp.Body)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(resp.StatusCode).Should(Equal(fiber.StatusOK))
 

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"log/slog"
 	"strconv"
 	"user-service-golang/pkg"
 
@@ -44,7 +44,8 @@ func (j *jsonwebtoken) SetUserId(userId uint) JWTActions {
 func (j *jsonwebtoken) GetUserId() uint {
 	userId, err := strconv.ParseUint(j.claims.Subject, 10, 64)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
+
 	}
 	return uint(userId)
 }
@@ -56,7 +57,8 @@ func (j *jsonwebtoken) GetToken() string {
 func (j *jsonwebtoken) CreateToken() JWTActions {
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, j.claims).SignedString([]byte(secret))
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
+
 	}
 	j.token = token
 
@@ -69,11 +71,12 @@ func (j *jsonwebtoken) ParseToken() JWTActions {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
+
 	}
 
 	if claims, ok := token.Claims.(*jwt.RegisteredClaims); ok && token.Valid {
-		fmt.Println(claims.Issuer)
+		slog.Error(claims.Issuer)
 	}
 
 	return j

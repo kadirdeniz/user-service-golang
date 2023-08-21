@@ -2,7 +2,7 @@ package tools
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"user-service-golang/pkg"
 
 	"github.com/redis/go-redis/v9"
@@ -23,7 +23,7 @@ func GetRedis() *redis.Client {
 
 		_, err := redisClient.Ping(context.Background()).Result()
 		if err != nil {
-			fmt.Println("Error connecting to redis")
+			slog.Error(err.Error())
 			panic(err)
 		}
 	}

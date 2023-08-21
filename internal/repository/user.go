@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"user-service-golang/internal/entity"
 
 	"github.com/redis/go-redis/v9"
@@ -49,7 +50,7 @@ func (u *userRepository) Create(user entity.User) (entity.User, error) {
 
 	user, err = u.redis.Create(user)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -63,7 +64,7 @@ func (u *userRepository) Update(user entity.User) (entity.User, error) {
 
 	user, err = u.redis.Update(user)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -77,7 +78,7 @@ func (u *userRepository) Delete(userId uint) (entity.User, error) {
 
 	user, err = u.redis.Delete(userId)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -86,7 +87,7 @@ func (u *userRepository) Delete(userId uint) (entity.User, error) {
 func (u *userRepository) FindById(userId uint) (entity.User, error) {
 	user, err := u.redis.FindById(userId)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	if user.ID == 0 {
@@ -97,7 +98,7 @@ func (u *userRepository) FindById(userId uint) (entity.User, error) {
 
 		user, err = u.redis.Create(user)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error(err.Error())
 		}
 	}
 
@@ -107,7 +108,7 @@ func (u *userRepository) FindById(userId uint) (entity.User, error) {
 func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 	user, err := u.redis.FindByEmail(email)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	if user.ID == 0 {
@@ -118,7 +119,7 @@ func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 
 		user, err = u.redis.Create(user)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error(err.Error())
 		}
 	}
 
@@ -128,7 +129,7 @@ func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 func (u *userRepository) FindByNickname(nickname string) (entity.User, error) {
 	user, err := u.redis.FindByNickname(nickname)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 	}
 
 	if user.ID == 0 {
@@ -139,7 +140,7 @@ func (u *userRepository) FindByNickname(nickname string) (entity.User, error) {
 
 		user, err = u.redis.Create(user)
 		if err != nil {
-			fmt.Println(err)
+			slog.Error(err.Error())
 		}
 	}
 
@@ -179,22 +180,22 @@ func NewUserRedisRepository(redis *redis.Client) UserRepositoryActions {
 func (u *userRedisRepository) Create(user entity.User) (entity.User, error) {
 	userStringify, err := json.Marshal(user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-%v", user.ID), userStringify, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-email-%v", user.Email), user.ID, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname), user.ID, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
@@ -203,22 +204,22 @@ func (u *userRedisRepository) Create(user entity.User) (entity.User, error) {
 func (u *userRedisRepository) Update(user entity.User) (entity.User, error) {
 	userStringify, err := json.Marshal(user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-%v", user.ID), userStringify, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-email-%v", user.Email), user.ID, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname), user.ID, 0).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
@@ -229,22 +230,22 @@ func (u *userRedisRepository) Delete(userId uint) (entity.User, error) {
 
 	err := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Scan(&user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Del(context.Background(), fmt.Sprintf("users-%v", userId)).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Del(context.Background(), fmt.Sprintf("users-email-%v", user.Email)).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	err = u.redis.Del(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname)).Err()
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
@@ -255,7 +256,7 @@ func (u *userRedisRepository) FindById(userId uint) (entity.User, error) {
 
 	err := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Scan(&user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
@@ -266,7 +267,7 @@ func (u *userRedisRepository) FindByEmail(email string) (entity.User, error) {
 
 	err := u.redis.Get(context.Background(), fmt.Sprintf("users-email-%v", email)).Scan(&user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
@@ -277,7 +278,7 @@ func (u *userRedisRepository) FindByNickname(nickname string) (entity.User, erro
 
 	err := u.redis.Get(context.Background(), fmt.Sprintf("users-nickname-%v", nickname)).Scan(&user)
 	if err != nil {
-		fmt.Println(err)
+		return user, err
 	}
 
 	return user, err
