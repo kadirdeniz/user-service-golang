@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"user-service-golang/internal/dto"
 	"user-service-golang/internal/service"
 	"user-service-golang/pkg"
@@ -32,7 +33,7 @@ func NewAuthHandler(
 			validator:   validator.New(),
 		}
 
-		auth := tools.NewServer().Group("/auth")
+		auth := tools.NewServer().Group(fmt.Sprintf("/%v/auth", pkg.Configs.Application.Version))
 		auth.Post("/register", authHandlerInstance.Register)
 		auth.Post("/login", authHandlerInstance.Login)
 	}
