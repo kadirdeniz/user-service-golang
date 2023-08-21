@@ -6,6 +6,8 @@ import (
 	"user-service-golang/pkg"
 	"user-service-golang/tools"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,6 +20,7 @@ type AuthHandlerActions interface {
 
 type authHandler struct {
 	authService service.AuthServiceActions
+	validator   *validator.Validate
 }
 
 func NewAuthHandler(
@@ -26,6 +29,7 @@ func NewAuthHandler(
 	if authHandlerInstance == nil {
 		authHandlerInstance = &authHandler{
 			authService: authService,
+			validator:   validator.New(),
 		}
 
 		auth := tools.NewServer().Group("/auth")
@@ -37,37 +41,53 @@ func NewAuthHandler(
 }
 
 func (a *authHandler) Register(c *fiber.Ctx) error {
-	var dto dto.RegisterRequest
-	if err := c.BodyParser(&dto); err != nil {
-		return err
+	var dtoObj dto.RegisterRequest
+	if err := c.BodyParser(&dtoObj); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
 	}
 
-	token, err := a.authService.Register(dto.ToUser())
+	if err := a.validator.Struct(dtoObj); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	token, err := a.authService.Register(dtoObj.ToUser())
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
 			Message: err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"token": token,
+	return c.Status(fiber.StatusCreated).JSON(dto.TokenResponse{
+		Token: token,
 	})
 }
 
 func (a *authHandler) Login(c *fiber.Ctx) error {
-	var dto dto.LoginRequest
-	if err := c.BodyParser(&dto); err != nil {
-		return err
+	var dtoObj dto.LoginRequest
+	if err := c.BodyParser(&dtoObj); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
 	}
 
-	token, err := a.authService.Login(dto.ToUser())
+	if err := a.validator.Struct(dtoObj); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	token, err := a.authService.Login(dtoObj.ToUser())
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
 			Message: err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"token": token,
+	return c.Status(fiber.StatusOK).JSON(dto.TokenResponse{
+		Token: token,
 	})
 }
