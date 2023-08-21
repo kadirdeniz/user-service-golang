@@ -1,11 +1,11 @@
-package tools
+package pkg
 
 import (
 	"log/slog"
 	"os"
 )
 
-func init() {
+func NewLogger() {
 	logHandler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level:     slog.LevelDebug,
 		AddSource: true,

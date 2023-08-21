@@ -13,6 +13,7 @@ func main() {
 	fmt.Println("User Service")
 
 	pkg.ReadConfigs()
+	pkg.NewLogger()
 
 	handler.NewAuthHandler(
 		service.NewAuthService(
