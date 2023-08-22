@@ -9,12 +9,12 @@ type Interest struct {
 
 	// The title of the interest.
 	// Required: true
-	Title string
+	Title string `mapstructure:"title"`
 
 	// The category of the interest.
 	// Required: true
-	Category string
+	Category string `mapstructure:"category"`
 
 	// List of users associated with this interest.
-	Users []User `gorm:"many2many:user_interests;"`
+	Users []User `gorm:"many2many:user_interests;" mapstructure:"users"`
 }

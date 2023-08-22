@@ -86,21 +86,20 @@ func (u *userRepository) Delete(userId uint) (entity.User, error) {
 }
 
 func (u *userRepository) FindById(userId uint) (entity.User, error) {
-	user, err := u.redis.FindById(userId)
-	if err != nil {
-		if err == pkg.ErrUserNotFound {
-			user, err = u.db.FindById(userId)
-			if err != nil {
-				return user, err
-			}
 
-			user, err = u.redis.Create(user)
-			if err != nil {
-				slog.Error(err.Error())
-			}
-		} else {
-			return user, err
-		}
+	user, err := u.redis.FindById(userId)
+	if err != nil && err != pkg.ErrUserNotFound {
+		slog.Error(err.Error())
+	}
+
+	user, err = u.db.FindById(userId)
+	if err != nil {
+		return user, err
+	}
+
+	user, err = u.redis.Create(user)
+	if err != nil {
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -108,20 +107,18 @@ func (u *userRepository) FindById(userId uint) (entity.User, error) {
 
 func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 	user, err := u.redis.FindByEmail(email)
-	if err != nil {
-		if err == pkg.ErrUserNotFound {
-			user, err = u.db.FindByEmail(email)
-			if err != nil {
-				return user, err
-			}
+	if err != nil && err != pkg.ErrUserNotFound {
+		slog.Error(err.Error())
+	}
 
-			user, err = u.redis.Create(user)
-			if err != nil {
-				slog.Error(err.Error())
-			}
-		} else {
-			return user, err
-		}
+	user, err = u.db.FindByEmail(email)
+	if err != nil {
+		return user, err
+	}
+
+	user, err = u.redis.Create(user)
+	if err != nil {
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -129,20 +126,18 @@ func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 
 func (u *userRepository) FindByNickname(nickname string) (entity.User, error) {
 	user, err := u.redis.FindByNickname(nickname)
-	if err != nil {
-		if err == pkg.ErrUserNotFound {
-			user, err = u.db.FindByNickname(nickname)
-			if err != nil {
-				return user, err
-			}
+	if err != nil && err != pkg.ErrUserNotFound {
+		slog.Error(err.Error())
+	}
 
-			user, err = u.redis.Create(user)
-			if err != nil {
-				slog.Error(err.Error())
-			}
-		} else {
-			return user, err
-		}
+	user, err = u.db.FindByNickname(nickname)
+	if err != nil {
+		return user, err
+	}
+
+	user, err = u.redis.Create(user)
+	if err != nil {
+		slog.Error(err.Error())
 	}
 
 	return user, err
@@ -255,9 +250,15 @@ func (u *userRedisRepository) Delete(userId uint) (entity.User, error) {
 func (u *userRedisRepository) FindById(userId uint) (entity.User, error) {
 	var user entity.User
 
-	err := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Scan(&user)
+	userObj := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Val()
+	if userObj == "" {
+		return user, pkg.ErrUserNotFound
+	}
+
+	err := json.Unmarshal([]byte(userObj), &user)
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return user, pkg.ErrUserNotFound
 	}
 
 	return user, err

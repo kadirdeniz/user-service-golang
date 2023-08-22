@@ -9,14 +9,14 @@ type UserPicture struct {
 
 	// The ID of the user to whom the picture belongs.
 	// Required: true
-	UserId uint
+	UserId uint `mapstructure:"user_id"`
 
 	// The thumbnail version of the user's picture.
-	Thumbnail string
+	Thumbnail string `mapstructure:"thumbnail"`
 
 	// The original size of the user's picture.
-	Original string
+	Original string `mapstructure:"original"`
 
 	// The large version of the user's picture.
-	Large string
+	Large string `mapstructure:"large"`
 }

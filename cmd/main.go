@@ -38,5 +38,12 @@ func main() {
 		),
 	)
 
+	handler.NewUserHandler(
+		service.NewUserService(repository.NewUserRepository(
+			repository.NewUserDBRepository(tools.GetPostgresql()),
+			repository.NewUserRedisRepository(tools.GetRedis()),
+		)),
+	)
+
 	tools.NewServer().Listen(":" + pkg.Configs.Application.Port)
 }

@@ -9,12 +9,12 @@ type Post struct {
 
 	// The ID of the user who created the post.
 	// Required: true
-	UserId uint
+	UserId uint `mapstructure:"user_id"`
 
 	// The title of the post.
 	// Required: true
-	Title string
+	Title string `mapstructure:"title"`
 
 	// The URL or location of the picture associated with the post.
-	Picture string
+	Picture string `mapstructure:"picture"`
 }
