@@ -11,7 +11,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/mitchellh/mapstructure"
-	"gorm.io/gorm"
 )
 
 var userHandlerInstance UserHandlerActions
@@ -67,7 +66,7 @@ func (u *userHandler) FindById(c *fiber.Ctx) error {
 
 	user, err := u.userService.FindById(uint(userId))
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if err == pkg.ErrUserNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
 				Message: pkg.ErrUserNotFound.Error(),
 			})
@@ -94,7 +93,7 @@ func (u *userHandler) FindByEmail(c *fiber.Ctx) error {
 
 	user, err := u.userService.FindByEmail(email)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if err == pkg.ErrUserNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
 				Message: pkg.ErrUserNotFound.Error(),
 			})
@@ -105,7 +104,15 @@ func (u *userHandler) FindByEmail(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	var userResponse dto.GetUserByIdResponse
+	err = mapstructure.Decode(user, &userResponse)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(userResponse)
 }
 
 func (u *userHandler) FindByNickname(c *fiber.Ctx) error {
@@ -113,7 +120,7 @@ func (u *userHandler) FindByNickname(c *fiber.Ctx) error {
 
 	user, err := u.userService.FindByNickname(nickname)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if err == pkg.ErrUserNotFound {
 			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
 				Message: pkg.ErrUserNotFound.Error(),
 			})
@@ -124,5 +131,13 @@ func (u *userHandler) FindByNickname(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	var userResponse dto.GetUserByIdResponse
+	err = mapstructure.Decode(user, &userResponse)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(userResponse)
 }
