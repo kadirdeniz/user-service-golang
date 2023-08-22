@@ -50,12 +50,11 @@ func (mr *MockUserRepositoryActionsMockRecorder) Create(user interface{}) *gomoc
 }
 
 // Delete mocks base method.
-func (m *MockUserRepositoryActions) Delete(userId uint) (entity.User, error) {
+func (m *MockUserRepositoryActions) Delete(userId uint) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", userId)
-	ret0, _ := ret[0].(entity.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Delete indicates an expected call of Delete.
@@ -138,12 +137,11 @@ func (mr *MockUserRepositoryActionsMockRecorder) IsNicknameExist(nickname interf
 }
 
 // Update mocks base method.
-func (m *MockUserRepositoryActions) Update(user entity.User) (entity.User, error) {
+func (m *MockUserRepositoryActions) Update(user entity.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", user)
-	ret0, _ := ret[0].(entity.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Update indicates an expected call of Update.
