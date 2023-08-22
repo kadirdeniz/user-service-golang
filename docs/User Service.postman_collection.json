@@ -335,6 +335,559 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": [
+						{
+							"name": "Get User By Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"deneme\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdeaanzz@hotmail.com\",\n    \"nickname\":\"kadiraadenzz\",\n    \"password\":\"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:55:47 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"user not found\"\n}"
+						},
+						{
+							"name": "Get User By Id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"deneme\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdeaanzz@hotmail.com\",\n    \"nickname\":\"kadiraadenzz\",\n    \"password\":\"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:55:56 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "211"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ID\": 16,\n    \"CreatedAt\": \"2023-08-22T19:07:22.734723Z\",\n    \"UpdatedAt\": \"2023-08-22T19:07:31.822944Z\",\n    \"DeletedAt\": null,\n    \"Firstname\": \"deneme\",\n    \"Lastname\": \"Deniz\",\n    \"Email\": \"kadirdeaanzz@hotmail.com\",\n    \"Nickname\": \"kadiraadenzz\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get User By Email",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": [
+						{
+							"name": "Get User By Email",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/email/johndoe@amail.com",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"email",
+										"johndoe@amail.com"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:58:21 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"user not found\"\n}"
+						},
+						{
+							"name": "Get User By Email",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/email/kadirdeaanzz@hotmail.com",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"email",
+										"kadirdeaanzz@hotmail.com"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:58:34 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "211"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ID\": 16,\n    \"CreatedAt\": \"2023-08-22T19:07:22.734723Z\",\n    \"UpdatedAt\": \"2023-08-22T19:07:31.822944Z\",\n    \"DeletedAt\": null,\n    \"Firstname\": \"deneme\",\n    \"Lastname\": \"Deniz\",\n    \"Email\": \"kadirdeaanzz@hotmail.com\",\n    \"Nickname\": \"kadiraadenzz\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get User By Nickname",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": [
+						{
+							"name": "Get User By Id Copy 2",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/nickname/asda",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"nickname",
+										"asda"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:58:59 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"user not found\"\n}"
+						},
+						{
+							"name": "Get User By Id Copy 2",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/nickname/kadiraadenzz",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"nickname",
+										"kadiraadenzz"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 19:59:08 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "211"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ID\": 16,\n    \"CreatedAt\": \"2023-08-22T19:07:22.734723Z\",\n    \"UpdatedAt\": \"2023-08-22T19:07:31.822944Z\",\n    \"DeletedAt\": null,\n    \"Firstname\": \"deneme\",\n    \"Lastname\": \"Deniz\",\n    \"Email\": \"kadirdeaanzz@hotmail.com\",\n    \"Nickname\": \"kadiraadenzz\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\":\"Kadir\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdenzz@hotmail.com\",\n    \"nickname\":\"kadirdenzz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"Kadir\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdenzz@hotmail.com\",\n    \"nickname\":\"kadirdenzz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:00:26 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"user not found\"\n}"
+						},
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"Kadir\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdenzz@hotmail.com\",\n    \"nickname\":\"kadirdenzz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:00:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "33"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"email already exist\"\n}"
+						},
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"Kadir\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdenzza@hotmail.com\",\n    \"nickname\":\"kadirdenzz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:00:46 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"nickname already exist\"\n}"
+						},
+						{
+							"name": "Update User",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\":\"Kadir\",\n    \"last_name\":\"Deniz\",\n    \"email\":\"kadirdenzza@hotmail.com\",\n    \"nickname\":\"kadirdaenzz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/users/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:00:51 GMT"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/16",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"16"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete User",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/1",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"1"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:01:15 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"user not found\"\n}"
+						},
+						{
+							"name": "Delete User",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/users/16",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"users",
+										"16"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 22 Aug 2023 20:01:22 GMT"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			]
 		}
 	]
 }
