@@ -32,3 +32,8 @@ type User struct {
 	// Posts created by the user.
 	Posts []Post
 }
+
+func (u User) IsEmpty() bool {
+	return u.Model != nil && u.Model.ID != 0
+
+}

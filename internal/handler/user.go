@@ -49,11 +49,76 @@ func NewUserHandler(
 }
 
 func (u *userHandler) Update(c *fiber.Ctx) error {
-	return nil
+	userId, err := strconv.ParseUint(c.Params("id"), 10, 32)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	var updateUserRequest dto.UpdateUserRequest
+	err = c.BodyParser(&updateUserRequest)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	err = u.validator.Struct(updateUserRequest)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	user, err := u.userService.FindById(uint(userId))
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
+				Message: pkg.ErrUserNotFound.Error(),
+			})
+		}
+	}
+
+	user.Firstname = updateUserRequest.Firstname
+	user.Lastname = updateUserRequest.Lastname
+	user.Nickname = updateUserRequest.Nickname
+	user.Email = updateUserRequest.Email
+
+	err = u.userService.Update(user)
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
+				Message: pkg.ErrUserNotFound.Error(),
+			})
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 func (u *userHandler) Delete(c *fiber.Ctx) error {
-	return nil
+	userId, err := strconv.ParseUint(c.Params("id"), 10, 32)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(pkg.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	err = u.userService.Delete(uint(userId))
+	if err != nil {
+		if err == pkg.ErrUserNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(pkg.ErrorResponse{
+				Message: pkg.ErrUserNotFound.Error(),
+			})
+		}
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 func (u *userHandler) FindById(c *fiber.Ctx) error {

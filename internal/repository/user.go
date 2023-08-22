@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strconv"
 	"user-service-golang/internal/entity"
 	"user-service-golang/pkg"
 
@@ -18,8 +19,8 @@ var userDBRepositoryInstance *userDBRepository
 
 type UserRepositoryActions interface {
 	Create(user entity.User) (entity.User, error)
-	Update(user entity.User) (entity.User, error)
-	Delete(userId uint) (entity.User, error)
+	Update(user entity.User) error
+	Delete(userId uint) error
 	FindById(userId uint) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
 	FindByNickname(email string) (entity.User, error)
@@ -57,39 +58,42 @@ func (u *userRepository) Create(user entity.User) (entity.User, error) {
 	return user, err
 }
 
-func (u *userRepository) Update(user entity.User) (entity.User, error) {
-	user, err := u.db.Update(user)
-	if err != nil {
-		return user, err
-	}
-
-	user, err = u.redis.Update(user)
-	if err != nil {
+func (u *userRepository) Update(user entity.User) error {
+	err := u.redis.Update(user)
+	if err != nil && err != pkg.ErrUserNotFound {
 		slog.Error(err.Error())
 	}
 
-	return user, err
+	err = u.db.Update(user)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
-func (u *userRepository) Delete(userId uint) (entity.User, error) {
-	user, err := u.db.Delete(userId)
-	if err != nil {
-		return user, err
-	}
-
-	user, err = u.redis.Delete(userId)
-	if err != nil {
+func (u *userRepository) Delete(userId uint) error {
+	err := u.redis.Delete(userId)
+	if err != nil && err != pkg.ErrUserNotFound {
 		slog.Error(err.Error())
 	}
 
-	return user, err
+	err = u.db.Delete(userId)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (u *userRepository) FindById(userId uint) (entity.User, error) {
-
 	user, err := u.redis.FindById(userId)
 	if err != nil && err != pkg.ErrUserNotFound {
 		slog.Error(err.Error())
+	}
+
+	if !user.IsEmpty() {
+		return user, err
 	}
 
 	user, err = u.db.FindById(userId)
@@ -111,6 +115,10 @@ func (u *userRepository) FindByEmail(email string) (entity.User, error) {
 		slog.Error(err.Error())
 	}
 
+	if !user.IsEmpty() {
+		return user, err
+	}
+
 	user, err = u.db.FindByEmail(email)
 	if err != nil {
 		return user, err
@@ -128,6 +136,10 @@ func (u *userRepository) FindByNickname(nickname string) (entity.User, error) {
 	user, err := u.redis.FindByNickname(nickname)
 	if err != nil && err != pkg.ErrUserNotFound {
 		slog.Error(err.Error())
+	}
+
+	if !user.IsEmpty() {
+		return user, err
 	}
 
 	user, err = u.db.FindByNickname(nickname)
@@ -176,75 +188,81 @@ func NewUserRedisRepository(redis *redis.Client) UserRepositoryActions {
 func (u *userRedisRepository) Create(user entity.User) (entity.User, error) {
 	userStringify, err := json.Marshal(user)
 	if err != nil {
+		slog.Error(err.Error())
 		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-%v", user.ID), userStringify, 0).Err()
 	if err != nil {
+		slog.Error(err.Error())
 		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-email-%v", user.Email), user.ID, 0).Err()
 	if err != nil {
+		slog.Error(err.Error())
 		return user, err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname), user.ID, 0).Err()
 	if err != nil {
+		slog.Error(err.Error())
 		return user, err
 	}
 
 	return user, err
 }
 
-func (u *userRedisRepository) Update(user entity.User) (entity.User, error) {
+func (u *userRedisRepository) Update(user entity.User) error {
 	userStringify, err := json.Marshal(user)
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-%v", user.ID), userStringify, 0).Err()
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-email-%v", user.Email), user.ID, 0).Err()
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return err
 	}
 
 	err = u.redis.Set(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname), user.ID, 0).Err()
 	if err != nil {
-		return user, err
+		slog.Error(err.Error())
+		return err
 	}
 
-	return user, err
+	return err
 }
 
-func (u *userRedisRepository) Delete(userId uint) (entity.User, error) {
-	var user entity.User
-
-	err := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Scan(&user)
+func (u *userRedisRepository) Delete(userId uint) error {
+	userObj, err := u.FindById(userId)
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	err = u.redis.Del(context.Background(), fmt.Sprintf("users-%v", userId)).Err()
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	err = u.redis.Del(context.Background(), fmt.Sprintf("users-email-%v", user.Email)).Err()
+	err = u.redis.Del(context.Background(), fmt.Sprintf("users-email-%v", userObj.Email)).Err()
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	err = u.redis.Del(context.Background(), fmt.Sprintf("users-nickname-%v", user.Nickname)).Err()
+	err = u.redis.Del(context.Background(), fmt.Sprintf("users-nickname-%v", userObj.Nickname)).Err()
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	return user, err
+	return err
 }
 
 func (u *userRedisRepository) FindById(userId uint) (entity.User, error) {
@@ -272,18 +290,15 @@ func (u *userRedisRepository) FindByEmail(email string) (entity.User, error) {
 		return user, pkg.ErrUserNotFound
 	}
 
-	userStringify := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Val()
-	if userStringify == "" {
-		return user, pkg.ErrUserNotFound
-	}
-
-	err := json.Unmarshal([]byte(userStringify), &user)
+	uintUserId, err := strconv.ParseUint(userId, 10, 32)
 	if err != nil {
 		slog.Error(err.Error())
 		return user, pkg.ErrUserNotFound
 	}
 
-	return user, nil
+	user, err = u.FindById(uint(uintUserId))
+
+	return user, err
 }
 
 func (u *userRedisRepository) FindByNickname(nickname string) (entity.User, error) {
@@ -294,16 +309,13 @@ func (u *userRedisRepository) FindByNickname(nickname string) (entity.User, erro
 		return user, pkg.ErrUserNotFound
 	}
 
-	userStringify := u.redis.Get(context.Background(), fmt.Sprintf("users-%v", userId)).Val()
-	if userStringify == "" {
-		return user, pkg.ErrUserNotFound
-	}
-
-	err := json.Unmarshal([]byte(userStringify), &user)
+	uintUserId, err := strconv.ParseUint(userId, 10, 32)
 	if err != nil {
 		slog.Error(err.Error())
 		return user, pkg.ErrUserNotFound
 	}
+
+	user, err = u.FindById(uint(uintUserId))
 
 	return user, err
 }
@@ -343,28 +355,39 @@ func (u *userDBRepository) Create(user entity.User) (entity.User, error) {
 	return user, err
 }
 
-func (u *userDBRepository) Update(user entity.User) (entity.User, error) {
-	err := u.db.Save(&user).Error
+func (u *userDBRepository) Update(user entity.User) error {
+	resp := u.db.Save(&user)
+	if resp.RowsAffected == 0 {
+		return pkg.ErrUserNotFound
+	}
+	err := resp.Error
 	if err != nil {
-		return user, err
+		if err == gorm.ErrRecordNotFound {
+			return pkg.ErrUserNotFound
+		}
+		return err
 	}
 
-	return user, err
+	return err
 }
 
-func (u *userDBRepository) Delete(userId uint) (entity.User, error) {
+func (u *userDBRepository) Delete(userId uint) error {
 	user := entity.User{
 		Model: &gorm.Model{
 			ID: userId,
 		},
 	}
 
-	err := u.db.Delete(&user).Error
+	resp := u.db.Delete(&user)
+	if resp.RowsAffected == 0 {
+		return pkg.ErrUserNotFound
+	}
+	err := resp.Error
 	if err != nil {
-		return user, err
+		return err
 	}
 
-	return user, err
+	return err
 }
 
 func (u *userDBRepository) FindById(userId uint) (entity.User, error) {

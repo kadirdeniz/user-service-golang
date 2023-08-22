@@ -8,8 +8,8 @@ import (
 
 type UserServiceActions interface {
 	Create(entity.User) (entity.User, error)
-	Update(entity.User) (entity.User, error)
-	Delete(userId uint) (entity.User, error)
+	Update(entity.User) error
+	Delete(userId uint) error
 	FindById(userId uint) (entity.User, error)
 	FindByEmail(email string) (entity.User, error)
 	FindByNickname(email string) (entity.User, error)
@@ -43,20 +43,20 @@ func (u *userService) Create(user entity.User) (entity.User, error) {
 	return u.userRepository.Create(user)
 }
 
-func (u *userService) Update(user entity.User) (entity.User, error) {
+func (u *userService) Update(user entity.User) error {
 
 	if u.userRepository.IsEmailExist(user.Email) {
-		return entity.User{}, pkg.ErrEmailAlreadyExist
+		return pkg.ErrEmailAlreadyExist
 	}
 
 	if u.userRepository.IsNicknameExist(user.Nickname) {
-		return entity.User{}, pkg.ErrNicknameAlreadyExist
+		return pkg.ErrNicknameAlreadyExist
 	}
 
 	return u.userRepository.Update(user)
 }
 
-func (u *userService) Delete(userId uint) (entity.User, error) {
+func (u *userService) Delete(userId uint) error {
 	return u.userRepository.Delete(userId)
 }
 
