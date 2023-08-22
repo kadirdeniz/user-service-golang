@@ -32,7 +32,7 @@ func NewAuthHandler(
 			validator:   validator.New(),
 		}
 
-		auth := tools.NewServer().Group(fmt.Sprintf("/%v/auth", pkg.Configs.Application.Version))
+		auth := tools.NewServer().Group(fmt.Sprintf("/api/%v/auth", pkg.Configs.Application.Version))
 		auth.Post("/register", authHandlerInstance.Register)
 		auth.Post("/login", authHandlerInstance.Login)
 	}
@@ -40,10 +40,15 @@ func NewAuthHandler(
 	return authHandlerInstance
 }
 
-// swagger:route POST /{version}/auth/register Authentication RegisterEndpoint
+// swagger:route POST /auth/register Authentication RegisterEndpoint
 // Register - User registration endpoint.
-// Produces:
-// - application/json
+// Parameters:
+//   - +name: RegisterData
+//     description: User registration data
+//     in: body
+//     required: true
+//     type: RegisterRequest
+//
 // Responses:
 //
 //	201: TokenResponse
@@ -74,7 +79,7 @@ func (a *authHandler) Register(c *fiber.Ctx) error {
 	})
 }
 
-// swagger:route POST /{version}/auth/login Authentication LoginEndpoint
+// swagger:route POST /auth/login Authentication LoginEndpoint
 // Login - User login endpoint.
 // Produces:
 // - application/json

@@ -1,19 +1,29 @@
 {
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
-  "schemes": ["http"],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
   "swagger": "2.0",
   "info": {
     "title": "API.",
-    "version": "1.0.0"
+    "version": "v1.0.0"
   },
   "host": "localhost:3000",
-  "basePath": "/api/v1",
+  "basePath": "/api/v1.0.0",
   "paths": {
-    "/{version}/auth/login": {
+    "/auth/login": {
       "post": {
-        "produces": ["application/json"],
-        "tags": ["Authentication"],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Login - User login endpoint.",
         "operationId": "LoginEndpoint",
         "responses": {
@@ -26,12 +36,26 @@
         }
       }
     },
-    "/{version}/auth/register": {
+    "/auth/register": {
       "post": {
-        "produces": ["application/json"],
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Register - User registration endpoint.",
         "operationId": "RegisterEndpoint",
+        "parameters": [
+          {
+            "description": "User registration data",
+            "name": "RegisterData",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "description": "User registration data",
+              "type": "object",
+              "$ref": "#/definitions/RegisterRequest"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "$ref": "#/responses/TokenResponse"
@@ -39,6 +63,47 @@
           "400": {
             "$ref": "#/responses/ErrorResponse"
           }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Interest": {
+      "x-go-package": "user-service-golang/internal/entity"
+    },
+    "Post": {
+      "title": "Post represents a user's post in the system.",
+      "x-go-package": "user-service-golang/internal/entity"
+    },
+    "RegisterRequest": {
+      "title": "RegisterRequest represents the structure for an API registration request.",
+      "x-go-package": "user-service-golang/internal/dto"
+    },
+    "User": {
+      "title": "User represents the user entity in the system with associated details.",
+      "x-go-package": "user-service-golang/internal/entity"
+    },
+    "UserPicture": {
+      "title": "UserPicture represents the different sizes of a user's picture.",
+      "x-go-package": "user-service-golang/internal/entity"
+    }
+  },
+  "responses": {
+    "ErrorResponse": {
+      "description": "",
+      "headers": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "TokenResponse": {
+      "description": "TokenResponse represents the structure for an API token response.",
+      "headers": {
+        "token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+          "description": "The JWT token for authenticated users.\nRequired: true"
         }
       }
     }

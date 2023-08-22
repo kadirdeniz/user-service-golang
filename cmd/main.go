@@ -1,8 +1,8 @@
 // Package classification API.
 //
 // Schemes: http
-// BasePath: /api/v1
-// Version: 1.0.0
+// BasePath: /api/v1.0.0
+// Version: v1.0.0
 // Host: localhost:3000
 //
 // Consumes:
