@@ -3,7 +3,7 @@ package dto
 import "user-service-golang/internal/entity"
 
 // LoginRequest represents the structure for an API login request.
-// swagger:model
+// swagger:parameters LoginRequest
 type LoginRequest struct {
 	// The email address of the user.
 	// Required: true
@@ -17,7 +17,6 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required,min=8,max=16"`
 }
 
-// ToUser converts a LoginRequest to a User entity.
 func (l *LoginRequest) ToUser() entity.User {
 	return entity.User{
 		Email:    l.Email,
